@@ -9,25 +9,48 @@ This article describes how to use KlipperScreen through a remote connection.
 ##  On the Host device (for example a Raspberry Pi):
 
 
-1. [First installl KlipperScreen](Installation.md)
+1. [First install KlipperScreen](Installation.md)
 2. Install a vnc server package, for example:
     ```bash
     sudo apt install tigervnc-standalone-server
     ```
-3. Create `launch_KlipperScreen.sh`:
 
+### On a Linux client:
+
+1. Run `vncpasswd` to set the vnc password password
+1. Add the following to the file `xstartup` script located in ~/.vnc/ folder (create if needed)
     ```bash
+    cd ~/KlipperScreen
+    exec ~/.KlipperScreen-env/bin/python ~/KlipperScreen/screen.py
+    ```
+1. Make the script executable with 
+    ```bash
+    chmod +x xstartup
+    ```
+1. Restart KlipperScreen or reboot the system:
+    ```bash
+    sudo systemctl service KlipperScreen restart
+    ```
+1. Start the vncserver (adjust your screen geometry screen geometry) :
+    ```bash
+    vncserver :5 -geometry 1366x768 -passwordfile ~/.vnc/passwd -localhost=0
+    ```
+
+### On other systems:
+    
+1. Create `launch_KlipperScreen.sh` in ~/KlipperScreen/scripts:
+_
     #!/usr/bin/env bash
-    # Use display 10 to avoid clashing with local X server, if anyy
+    # Use display 10 to avoid clashing with local X server, if any
     Xtigervnc -rfbport 5900 -noreset -AlwaysShared -SecurityTypes none :10&
     DISPLAY=:10 $KS_XCLIENT&
     wait
     ```
-4. Restart KlipperScreen or reboot the system:
+1. Restart KlipperScreen or reboot the system:
     ```bash
-    sudo systemctl service KlipperScreen restart
+    sudo systemctl restart KlipperScreen
     ```
-5. On KlipperScreen set the following configuration:
+1. On KlipperScreen set the following configuration:
 
 DPMS: off
 
@@ -37,8 +60,12 @@ Display timeout: off
 
 ## On the remote device:
 
-1. Installa a VNC viewer and  configure it to the ip of the host.
+1. Install a VNC viewer and  configure it to the ip of the host.
 
+???+ example on Lunux:
+    * Install a VNC viewer for example: `sudo apt-get install tigervnc-viewer'
+    * Start the VNC viewer and connect to the remote KlipperScreen: `vncviewer <host>:5`
+    
 
 ???+ example "Example using an iPad"
     * Install a VNC viewer for example: `RealVNC Viewer: Remote Desktop`
